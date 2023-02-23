@@ -3,7 +3,17 @@ from __future__ import annotations
 
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Iterable, List, Optional
+from typing import (
+    AbstractSet,
+    Any,
+    Callable,
+    Collection,
+    Iterable,
+    List,
+    Literal,
+    Optional,
+    Union,
+)
 
 from langchain.docstore.document import Document
 
@@ -43,6 +53,12 @@ class TextSplitter(ABC):
             for chunk in self.split_text(text):
                 documents.append(Document(page_content=chunk, metadata=_metadatas[i]))
         return documents
+
+    def split_documents(self, documents: List[Document]) -> List[Document]:
+        """Split documents."""
+        texts = [doc.page_content for doc in documents]
+        metadatas = [doc.metadata for doc in documents]
+        return self.create_documents(texts, metadatas)
 
     def _join_docs(self, docs: List[str], separator: str) -> Optional[str]:
         text = separator.join(docs)
@@ -108,7 +124,11 @@ class TextSplitter(ABC):
 
     @classmethod
     def from_tiktoken_encoder(
-        cls, encoding_name: str = "gpt2", **kwargs: Any
+        cls,
+        encoding_name: str = "gpt2",
+        allowed_special: Union[Literal["all"], AbstractSet[str]] = set(),
+        disallowed_special: Union[Literal["all"], Collection[str]] = "all",
+        **kwargs: Any,
     ) -> TextSplitter:
         """Text splitter that uses tiktoken encoder to count length."""
         try:
@@ -119,11 +139,19 @@ class TextSplitter(ABC):
                 "This is needed in order to calculate max_tokens_for_prompt. "
                 "Please it install it with `pip install tiktoken`."
             )
+
         # create a GPT-3 encoder instance
         enc = tiktoken.get_encoding(encoding_name)
 
-        def _tiktoken_encoder(text: str) -> int:
-            return len(enc.encode(text))
+        def _tiktoken_encoder(text: str, **kwargs: Any) -> int:
+            return len(
+                enc.encode(
+                    text,
+                    allowed_special=allowed_special,
+                    disallowed_special=disallowed_special,
+                    **kwargs,
+                )
+            )
 
         return cls(length_function=_tiktoken_encoder, **kwargs)
 
@@ -149,7 +177,13 @@ class CharacterTextSplitter(TextSplitter):
 class TokenTextSplitter(TextSplitter):
     """Implementation of splitting text that looks at tokens."""
 
-    def __init__(self, encoding_name: str = "gpt2", **kwargs: Any):
+    def __init__(
+        self,
+        encoding_name: str = "gpt2",
+        allowed_special: Union[Literal["all"], AbstractSet[str]] = set(),
+        disallowed_special: Union[Literal["all"], Collection[str]] = "all",
+        **kwargs: Any,
+    ):
         """Create a new TextSplitter."""
         super().__init__(**kwargs)
         try:
@@ -162,11 +196,17 @@ class TokenTextSplitter(TextSplitter):
             )
         # create a GPT-3 encoder instance
         self._tokenizer = tiktoken.get_encoding(encoding_name)
+        self._allowed_special = allowed_special
+        self._disallowed_special = disallowed_special
 
     def split_text(self, text: str) -> List[str]:
         """Split incoming text and return chunks."""
         splits = []
-        input_ids = self._tokenizer.encode(text)
+        input_ids = self._tokenizer.encode(
+            text,
+            allowed_special=self._allowed_special,
+            disallowed_special=self._disallowed_special,
+        )
         start_idx = 0
         cur_idx = min(start_idx + self._chunk_size, len(input_ids))
         chunk_ids = input_ids[start_idx:cur_idx]
@@ -269,3 +309,53 @@ class SpacyTextSplitter(TextSplitter):
         """Split incoming text and return chunks."""
         splits = (str(s) for s in self._tokenizer(text).sents)
         return self._merge_splits(splits, self._separator)
+
+
+class MarkdownTextSplitter(RecursiveCharacterTextSplitter):
+    """Attempts to split the text along Markdown-formatted headings."""
+
+    def __init__(self, **kwargs: Any):
+        """Initialize a MarkdownTextSplitter."""
+        separators = [
+            # First, try to split along Markdown headings (starting with level 2)
+            "\n## ",
+            "\n### ",
+            "\n#### ",
+            "\n##### ",
+            "\n###### ",
+            # Note the alternative syntax for headings (below) is not handled here
+            # Heading level 2
+            # ---------------
+            # End of code block
+            "```\n\n",
+            # Horizontal lines
+            "\n\n***\n\n",
+            "\n\n---\n\n",
+            "\n\n___\n\n",
+            # Note that this splitter doesn't handle horizontal lines defined
+            # by *three or more* of ***, ---, or ___, but this is not handled
+            "\n\n",
+            "\n",
+            " ",
+            "",
+        ]
+        super().__init__(separators=separators, **kwargs)
+
+
+class PythonCodeTextSplitter(RecursiveCharacterTextSplitter):
+    """Attempts to split the text along Python syntax."""
+
+    def __init__(self, **kwargs: Any):
+        """Initialize a MarkdownTextSplitter."""
+        separators = [
+            # First, try to split along class definitions
+            "\nclass ",
+            "\ndef ",
+            "\n\tdef ",
+            # Now split by the normal type of lines
+            "\n\n",
+            "\n",
+            " ",
+            "",
+        ]
+        super().__init__(separators=separators, **kwargs)

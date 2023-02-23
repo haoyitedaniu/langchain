@@ -42,7 +42,7 @@ Checkout the below guide for a walkthrough of how to get started using LangChain
 Modules
 -----------
 
-There are six main modules that LangChain provides support for.
+There are several main modules that LangChain provides support for.
 For each module we provide some examples to get started, how-to guides, reference docs, and conceptual guides.
 These modules are, in increasing order of complexity:
 
@@ -51,9 +51,13 @@ These modules are, in increasing order of complexity:
 
 - `LLMs <./modules/llms.html>`_: This includes a generic interface for all LLMs, and common utilities for working with LLMs.
 
+- `Document Loaders <./modules/document_loaders.html>`_: This includes a standard interface for loading documents, as well as specific integrations to all types of text data sources.
+
 - `Utils <./modules/utils.html>`_: Language models are often more powerful when interacting with other sources of knowledge or computation. This can include Python REPLs, embeddings, search engines, and more. LangChain provides a large collection of common utils to use in your application.
 
 - `Chains <./modules/chains.html>`_: Chains go beyond just a single LLM call, and are sequences of calls (whether to an LLM or a different utility). LangChain provides a standard interface for chains, lots of integrations with other tools, and end-to-end chains for common applications.
+
+- `Indexes <./modules/indexes.html>`_: Language models are often more powerful when combined with your own text data - this module covers best practices for doing exactly that.
 
 - `Agents <./modules/agents.html>`_: Agents involve an LLM making decisions about which Actions to take, taking that Action, seeing an Observation, and repeating that until done. LangChain provides a standard interface for agents, a selection of agents to choose from, and examples of end to end agents.
 
@@ -68,7 +72,9 @@ These modules are, in increasing order of complexity:
 
    ./modules/prompts.md
    ./modules/llms.md
+   ./modules/document_loaders.md
    ./modules/utils.md
+   ./modules/indexes.md
    ./modules/chains.md
    ./modules/agents.md
    ./modules/memory.md

@@ -37,6 +37,17 @@ Open Source
 
     ---
 
+    .. link-button:: https://github.com/normandmickey/MrsStax
+        :type: url
+        :text: QA Slack Bot
+        :classes: stretched-link btn-lg
+
+    +++
+
+    This application is a Slack Bot that uses Langchain and OpenAI's GPT3 language model to provide domain specific answers. You provide the documents.
+
+    ---
+
     .. link-button:: https://github.com/OpenBioLink/ThoughtSource
         :type: url
         :text: ThoughtSource
@@ -199,6 +210,17 @@ Open Source
     +++
 
     This repo is a simple demonstration of using LangChain to do fact-checking with prompt chaining.
+    
+    ---
+
+    .. link-button:: https://github.com/arc53/docsgpt
+        :type: url
+        :text: DocsGPT
+        :classes: stretched-link btn-lg
+    
+    +++
+
+    Answer questions about the documentation of any project    
 
 Misc. Colab Notebooks
 ~~~~~~~~~~~~~~~
