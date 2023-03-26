@@ -36,6 +36,8 @@ In the below guides, we cover different types of vectorstores and how to use the
 
 `Chroma <./vectorstore_examples/chroma.html>`_: A walkthrough of how to use the Chroma vectorstore wrapper.
 
+`AtlasDB <./vectorstore_examples/atlas.html>`_: A walkthrough of how to use the AtlasDB vectorstore and visualizer wrapper.
+
 `DeepLake <./vectorstore_examples/deeplake.html>`_: A walkthrough of how to use the Deep Lake, data lake, wrapper.
 
 `FAISS <./vectorstore_examples/faiss.html>`_: A walkthrough of how to use the FAISS vectorstore wrapper.
@@ -44,11 +46,15 @@ In the below guides, we cover different types of vectorstores and how to use the
 
 `Milvus <./vectorstore_examples/milvus.html>`_: A walkthrough of how to use the Milvus vectorstore wrapper.
 
+`Open Search <./vectorstore_examples/opensearch.html>`_: A walkthrough of how to use the OpenSearch wrapper.
+
 `Pinecone <./vectorstore_examples/pinecone.html>`_: A walkthrough of how to use the Pinecone vectorstore wrapper.
 
 `Qdrant <./vectorstore_examples/qdrant.html>`_: A walkthrough of how to use the Qdrant vectorstore wrapper.
 
 `Weaviate <./vectorstore_examples/weaviate.html>`_: A walkthrough of how to use the Weaviate vectorstore wrapper.
+
+`PGVector <./vectorstore_examples/pgvector.html>`_: A walkthrough of how to use the PGVector (Postgres Vector DB) vectorstore wrapper.
 
 
 .. toctree::
@@ -59,6 +65,29 @@ In the below guides, we cover different types of vectorstores and how to use the
    :hidden:
 
    vectorstore_examples/*
+
+
+Retrievers
+------------
+
+
+The retriever interface is a generic interface that makes it easy to combine documents with
+language models. This interface exposes a `get_relevant_documents` method which takes in a query
+(a string) and returns a list of documents.
+
+`Vectorstore Retriever <./retriever_examples/vectorstore-retriever.html>`_: A walkthrough of how to use a VectorStore as a Retriever.
+
+`ChatGPT Plugin Retriever <./retriever_examples/chatgpt-plugin-retriever.html>`_: A walkthrough of how to use the ChatGPT Plugin Retriever within the LangChain framework.
+
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+   :caption: Retrievers
+   :name: retrievers
+   :hidden:
+
+   retriever_examples/*
 
 
 Chains
